@@ -1,36 +1,28 @@
 # Euchre RL Agent Environment
-
-class EuchreEnvironment():
-    """
-    Environment for Euchre card game
-
-    """
-    def env_init(self, env_info={}):
-        """Initialize the Euchre environment"""
-
-        # reward, state, termination tuple
-        reward = None
-        state = None
-        termination = None
-        self.reward_state_termination = (reward, state, termination)
-
-        # number of points to win this episode
-        self.max_points = env_info.get("max_points", 10)
-
-    def env_start(self):
-        """
-        Start environment by dealing the cards
-
-        Called when the episode starts, before calling agent_start
-        """
-        # TODO: deal the cards randomly, define the starting state for agent
-
-    def env_step(self):
-        pass
+# Author: Qianbo Yin
 
 
-class QLearningAgent():
-    """
-    Q-Learning Agent in Euchre environment
+from rl_glue import RLGlue
+from manager import Manager
+from EuchreEnvironment import EuchreEnvironment
+from QLearningAgent import TDAgent
 
-    """
+
+def main():
+    #TODO: specify policy somehow
+    policy = None
+
+    # define environment and agent
+    env = EuchreEnvironment
+    agent = TDAgent
+    env_info = {'max_points': 10, 'agent_num': 1}
+    agent_info = {'policy': policy}
+
+    # use RLGlue to run experiment
+    rl_glue = RLGlue(env, agent)
+    rl_glue.rl_init(agent_info, env_info)
+
+
+
+if __name__ == '__main__':
+    main()
