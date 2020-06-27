@@ -33,13 +33,10 @@ class EuchreEnvironment(BaseEnvironment):
         termination = None
         self.reward_state_termination = (reward, state, termination)
 
-        # intermediate points
+        # game parameters for this episode
+        self.trump_suit = None
         self.own_points = 0
         self.oppoent_points = 0
-
-        # TODO: DO I NEED THIS?
-        # number of points to win this episode
-        self.max_points = env_info.get("max_points", 10)
 
         # number of RL agents
         self.agent_num = env_info.get("agent_num", 1)
@@ -51,17 +48,19 @@ class EuchreEnvironment(BaseEnvironment):
         RETURNS: initial state
         """
         # decide trump suit and deal cards
-        trump_suit = np.random.randint(0, 4)
+        self.trump_suit = np.random.randint(0, 4)
         all_cards = np.arange(24)
         np.random.shuffle(all_cards)
         main_agent_cards = np.sort(all_cards[0:5])
-        agent_1_cards = np.sort(all_cards[5:10])
-        agent_2_cards = np.sort(all_cards[10:15])
-        agent_3_cards = np.sort(all_cards[15:20])
+
+        # create 3 auxilary agents
+        self.agent_1 = self.RandomAgent(np.sort(all_cards[5:10]))
+        self.agent_2 = self.RandomAgent(np.sort(all_cards[10:15]))
+        self.agent_3 = self.RandomAgent(np.sort(all_cards[15:20]))
         
         # store the initial state
         # state representation - (trump_suit(0-3), cards_in_hand)
-        init_state = np.concatenate([trump_suit, main_agent_cards])
+        init_state = np.concatenate([self.trump_suit, main_agent_cards])
         reward = 0
         self.reward_state_termination = (reward, init_state, False)
         return init_state
@@ -84,21 +83,42 @@ class EuchreEnvironment(BaseEnvironment):
         if action not in legal_actions:
             raise Exception(str(action) + "not in possible actions")
 
-        # change to next state and return reward
+        # every agent plays a card
+        main_agent_card = state[action+1]
         state = np.delete(state, action+1)
+        card_1 = self.agent_1.play_card()
+        card_2 = self.agent_2.play_card()
+        card_3 = self.agent_3.play_card()
 
-        # if not terminate, add points for this round of hand
+        # add a point according to biggest card
+        biggest = self.compare_cards(main_agent_card, card_1, card_2, card_3)
+        if biggest == 0 or biggest == 2:
+            self.own_points += 1
+        else:
+            self.oppoent_points += 1
 
-        # if terminate, assign reward accordingly
-        
+        # all cards played, the episode has terminated
+        if len(state) == 1:
+            # won the episode
+            if self.own_points > self.oppoent_points:
+                self.reward_state_termination = (1, state, True)
+                return self.reward_state_termination
+            # lost it
+            else:
+                self.reward_state_termination = (-1, state, True)
+                return self.reward_state_termination
+        else:
+            # episode has not terminated
+            self.reward_state_termination = (0, state, False)
+            return self.reward_state_termination
 
     def env_end(self):
         pass
 
     def env_cleanup(self):
+        self.trump_suit = None
         self.own_points = 0
         self.oppoent_points = 0
-        pass
     
     def get_legal_action(self):
         """
@@ -109,14 +129,31 @@ class EuchreEnvironment(BaseEnvironment):
         state = self.reward_state_termination[1]
         return np.arange(len(state)-1)
     
+    def compare_cards(self, card_0, card_1, card_2, card_3):
+        """RETURN: The biggest card 0/1/2/3, according to the trump suit"""
+        # TODO
+        return 0
+
     class RandomAgent():
         """Random Agent used to train RL agent, as partner or opponent"""
-        def __init__(self):
-            pass
+        def __init__(self, cards):
+            """Initialize random agent with a number of cards."""
+            self.cards = cards
+        
+        def play_card(self):
+            """Play a random card at hand.
+            
+            RETURN: The card being played
+            """
+            card_idx = np.random.randint(0, len(self.cards))
+            card = self.cards[card_idx]
+            self.cards = np.delete(self.cards, card_idx)
+            return card
     
     class DummyAgent():
-        """Random Agent used to train RL agent, as partner or opponent"""
+        """Dummy Agent used to train RL agent, as partner or opponent"""
         def __init__(self):
+            #TODO
             pass
     
     def state_to_hand(self, state):
