@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 """Glues together an experiment, agent, and environment.
+
+Adapted from University of Alberta, Reinforcement Learning Coursera class
 """
 
 from __future__ import print_function
@@ -129,7 +131,7 @@ class RLGlue:
 
         (reward, last_state, term) = self.environment.env_step(self.last_action)
 
-        self.total_reward += reward;
+        self.total_reward += reward
 
         if term:
             self.num_episodes += 1

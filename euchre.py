@@ -1,6 +1,7 @@
 # Euchre RL Agent Environment
 # Author: Qianbo Yin
-
+# QUESTION: 1. HOW TO CREATE MULTI-AGENT INTERFACE
+# 2. WHAT DOES ALL THE OTHER AGENTS DO
 
 from rl_glue import RLGlue
 from manager import Manager
