@@ -14,7 +14,7 @@ def main():
     env = EuchreEnvironment
     agent = TDAgent
     env_info = {'max_points': 10, 'agent_num': 1}
-    agent_info = {'discount': 0.9, 'learning_rate':0.1}
+    agent_info = {'discount': 0.9, 'learning_rate': 0.1, 'epsilon': 0.05}
 
     # use RLGlue to run experiment
     rl_glue = RLGlue(env, agent)

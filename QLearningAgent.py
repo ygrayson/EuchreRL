@@ -11,13 +11,14 @@ class TDAgent(BaseAgent):
     """
     def agent_init(self, agent_info={}):
         """Setup for the agent called when the experiment first starts."""
-        # Discount factor (gamma) to use in the updates
-        self.discount = agent_info.get('discount')
-        # The learning rate or step size parameter (alpha) to use in updates
-        self.learning_rate = agent_info.get('learning_rate')
+
+        # get agent parameters
+        self.discount = agent_info.get('discount', 0.9)
+        self.learning_rate = agent_info.get('learning_rate', 0.1)
+        self.epsilon = agent_info.get('epsilon', 0.05)
 
         # initialize Q-values for all different state-action pair
-        self.values = None
+        self.q_values = None
 
     def agent_start(self, state):
         pass

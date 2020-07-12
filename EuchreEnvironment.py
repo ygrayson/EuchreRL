@@ -122,9 +122,11 @@ class EuchreEnvironment(BaseEnvironment):
         return self.reward_state_termination
 
     def env_end(self):
+        """Environment ends."""
         pass
 
     def env_cleanup(self):
+        """Cleanup done after the environment ends."""
         self.trump_suit = None
         self.own_points = 0
         self.oppoent_points = 0
@@ -143,8 +145,11 @@ class EuchreEnvironment(BaseEnvironment):
         """Compare and return which card is the biggest, given the current-round suit.
 
         RETURN: The biggest card 0/1/2/3, according to the trump suit and current-round suit"""
-        # TODO
-        return 0
+        card_0_val = self.card_value(card_0, defining_suit)
+        card_1_val = self.card_value(card_1, defining_suit)
+        card_2_val = self.card_value(card_2, defining_suit)
+        card_3_val = self.card_value(card_3, defining_suit)
+        return np.argmax(np.array([card_0_val, card_1_val, card_2_val, card_3_val]))
 
     #TODO: TO HAVE RL AGENT TO LEARN, WE MUST HAVE INTELLIGENT AGENT TO PLAY AGAINST WITH
     class RandomAgent():
@@ -169,8 +174,10 @@ class EuchreEnvironment(BaseEnvironment):
             #TODO
             pass
     
-    def reassign_card_value(self, card, the_suit):
-        """INPUT: card - the card to be reassign value
+    def card_value(self, card, the_suit):
+        """Reevaluate the card value, based on trump suit and current-round suit.
+        
+        INPUT: card - the card to be reassign value
                   the_suit - the defining suit for this round
         RETURN: card_val - new card value from 0 to 23
         """
@@ -213,6 +220,7 @@ class EuchreEnvironment(BaseEnvironment):
 
         card_val = reassigned_value[card]
         return card_val
+
 
 
     def state_to_hand(self, state):
