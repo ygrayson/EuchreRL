@@ -13,6 +13,8 @@ class TDAgent(BaseAgent):
         """Setup for the agent called when the experiment first starts."""
 
         # get agent parameters
+        self.num_states = agent_info.get('num_states')
+        self.num_actions = agent_info.get('num_actions')
         self.discount = agent_info.get('discount', 0.9)
         self.learning_rate = agent_info.get('learning_rate', 0.1)
         self.epsilon = agent_info.get('epsilon', 0.05)
