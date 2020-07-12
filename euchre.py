@@ -10,14 +10,11 @@ from QLearningAgent import TDAgent
 
 
 def main():
-    #TODO: specify policy somehow
-    policy = None
-
     # define environment and agent
     env = EuchreEnvironment
     agent = TDAgent
     env_info = {'max_points': 10, 'agent_num': 1}
-    agent_info = {'policy': policy}
+    agent_info = {'discount': 0.9, 'learning_rate':0.1}
 
     # use RLGlue to run experiment
     rl_glue = RLGlue(env, agent)
